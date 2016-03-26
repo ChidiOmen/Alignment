@@ -35,9 +35,30 @@ Crafty.c('Bush', {
 
 Crafty.c('Pushable', {
 	init: function() {
+		this.colliding = false;
 		this.requires('Actor, Color, Collision');
 		this.color('rgb(220, 205, 40)');
-		this.checkHits('PlayerCharacter');
+		this.checkHits('Solid, Pushable');
+		this.onHit('Solid', this.stopMove);
+	},
+
+	stopMove : function(block) {
+		Crafty.log('WHYHYHHY');
+		colliding = true;
+		switch (this.last_move) {
+			case 'up':
+				this.y += Game.map_grid.tile.height;
+				break;
+			case 'down':
+				this.y -= Game.map_grid.tile.height;
+				break;
+			case 'left':
+				this.x += Game.map_grid.tile.width;
+				break;
+			case 'right':
+				this.x -= Game.map_grid.tile.width;
+				break;
+		}		
 	},
 });
 
@@ -65,7 +86,7 @@ Crafty.c('PlayerCharacter', {
 			}
 		});
 		this.onHit('Solid', this.stopMove);
-		this.onHit('Pushable', this.push);
+		this.onHit('Pushable', this.push_back);
 		//this.checkHits('Solid, Pushable');
 		/*this.bind('HitOn', function (hitData) {
 			Crafty.log(hitData[0][0]);
@@ -138,37 +159,37 @@ Crafty.c('PlayerCharacter', {
 		}		
 	},
 
-	push : function(data) {
+	push_back : function(data) {
 		var pushed = data[0].obj;
 		switch (this.last_move) {
 			case 'up':
 				pushed.y -= Game.map_grid.tile.height;
-				Crafty.log(pushed.hit);
-				if (pushed.hit('Solid, Pushable') != false) {
+				Crafty.log(pushed.colliding);
+				if (pushed.colliding) {
 					pushed.y += Game.map_grid.tile.height;
 					this.y += Game.map_grid.tile.height;
 				}
 				break;
 			case 'down':
 				pushed.y += Game.map_grid.tile.height;
-				Crafty.log(pushed.hit);
-				if (pushed.hit('Solid, Pushable') != false) {
+				Crafty.log(pushed.colliding);
+				if (pushed.colliding) {
 					pushed.y -= Game.map_grid.tile.height;
 					this.y -= Game.map_grid.tile.height;
 				}
 				break;
 			case 'left':
 				pushed.x -= Game.map_grid.tile.height;
-				Crafty.log(pushed.hit);
-				if (pushed.hit('Solid, Pushable') != false) {
+				Crafty.log(pushed.colliding);
+				if (pushed.colliding) {
 					pushed.x += Game.map_grid.tile.height;
 					this.x += Game.map_grid.tile.height;
 				}
 				break;
 			case 'right':
 				pushed.x += Game.map_grid.tile.height;
-				Crafty.log(pushed.hit);
-				if (pushed.hit('Solid, Pushable') != false) {
+				Crafty.log(pushed.colliding);
+				if (pushed.colliding) {
 					pushed.x -= Game.map_grid.tile.height;
 					this.x -= Game.map_grid.tile.height;
 				}
