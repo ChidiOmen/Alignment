@@ -43,28 +43,8 @@ Game = {
 				}
 			}
 		}
-		var square = Crafty.e('2D, Canvas, Color')
-			.attr({x: 0, y: 0, 
-				w: Game.map_grid.tile.width, h: Game.map_grid.tile.height})
-			.color('red')
-			.bind("EnterFrame", function(eventData) {
-				// Move to the right by 10 pixels per second
-				this.x = this.x + Game.number * (eventData.dt / 100);
-			})
-			.bind('KeyDown', function(e) {
-				if (e.key == Crafty.keys.DOWN_ARROW) {
-					this.y += Game.map_grid.tile.height;
-				}
-				if (e.key == Crafty.keys.UP_ARROW) {
-					this.y -= Game.map_grid.tile.height;
-				}
-				if (e.key == Crafty.keys.LEFT_ARROW) {
-					this.x -= Game.map_grid.tile.width;
-				}
-				if (e.key == Crafty.keys.RIGHT_ARROW) {
-					this.x += Game.map_grid.tile.width;
-				}
-			})
+		
+		Crafty.e('PlayerCharacter').at(5,5);
 
 	}
 };
