@@ -64,8 +64,10 @@ Crafty.c('PlayerCharacter', {
 				this.x += Game.map_grid.tile.width;
 			}
 		});
+		this.onHit('Solid', this.stopMove);
+		this.onHit('Pushable', this.push);
 		this.checkHits('Solid, Pushable');
-		this.bind('HitOn', function (hitData) {
+		/*this.bind('HitOn', function (hitData) {
 			Crafty.log(hitData[0][0]);
 			if (hitData[0].id == 'Solid') {
 				switch (this.last_move) {
@@ -116,6 +118,41 @@ Crafty.c('PlayerCharacter', {
 				}
 
 			}
-		});
+		});*/
 	},
+
+	stopMove : function(block) {
+		switch (this.last_move) {
+			case 'up':
+				this.y += Game.map_grid.tile.height;
+				break;
+			case 'down':
+				this.y -= Game.map_grid.tile.height;
+				break;
+			case 'left':
+				this.x += Game.map_grid.tile.width;
+				break;
+			case 'right':
+				this.x -= Game.map_grid.tile.width;
+				break;
+		}		
+	},
+
+	push : function(data) {
+		var pushed = data[0].obj;
+		switch (this.last_move) {
+			case 'up':
+				pushed.y -= Game.map_grid.tile.height;
+				break;
+			case 'down':
+				pushed.y += Game.map_grid.tile.height;
+				break;
+			case 'left':
+				pushed.x -= Game.map_grid.tile.width;
+				break;
+			case 'right':
+				pushed.x += Game.map_grid.tile.width;
+				break;
+		}
+	}
 });
