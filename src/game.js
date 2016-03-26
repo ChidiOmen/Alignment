@@ -28,6 +28,7 @@ Game = {
 		// Start crafty and set a background color so that we can see it's working
 		Crafty.init(Game.width(), Game.height());
 		Crafty.background('rgb(249, 223, 125');
+		//Crafty.background('url(assets/dhbg.png) width:100%');
 
 		for (var x = 0; x < Game.map_grid.width; x++) {
 			for (var y = 0; y < Game.map_grid.height; y++) {

@@ -36,7 +36,7 @@ Crafty.c('Bush', {
 Crafty.c('Pushable', {
 	init: function() {
 		this.requires('Actor, Color, Collision');
-		this.color('red');
+		this.color('rgb(220, 205, 40)');
 		this.checkHits('PlayerCharacter');
 	},
 });
@@ -66,7 +66,7 @@ Crafty.c('PlayerCharacter', {
 		});
 		this.onHit('Solid', this.stopMove);
 		this.onHit('Pushable', this.push);
-		this.checkHits('Solid, Pushable');
+		//this.checkHits('Solid, Pushable');
 		/*this.bind('HitOn', function (hitData) {
 			Crafty.log(hitData[0][0]);
 			if (hitData[0].id == 'Solid') {
@@ -143,16 +143,36 @@ Crafty.c('PlayerCharacter', {
 		switch (this.last_move) {
 			case 'up':
 				pushed.y -= Game.map_grid.tile.height;
+				Crafty.log(pushed.hit);
+				if (pushed.hit('Solid, Pushable') != false) {
+					pushed.y += Game.map_grid.tile.height;
+					this.y += Game.map_grid.tile.height;
+				}
 				break;
 			case 'down':
 				pushed.y += Game.map_grid.tile.height;
+				Crafty.log(pushed.hit);
+				if (pushed.hit('Solid, Pushable') != false) {
+					pushed.y -= Game.map_grid.tile.height;
+					this.y -= Game.map_grid.tile.height;
+				}
 				break;
 			case 'left':
-				pushed.x -= Game.map_grid.tile.width;
+				pushed.x -= Game.map_grid.tile.height;
+				Crafty.log(pushed.hit);
+				if (pushed.hit('Solid, Pushable') != false) {
+					pushed.x += Game.map_grid.tile.height;
+					this.x += Game.map_grid.tile.height;
+				}
 				break;
 			case 'right':
-				pushed.x += Game.map_grid.tile.width;
+				pushed.x += Game.map_grid.tile.height;
+				Crafty.log(pushed.hit);
+				if (pushed.hit('Solid, Pushable') != false) {
+					pushed.x -= Game.map_grid.tile.height;
+					this.x -= Game.map_grid.tile.height;
+				}
 				break;
 		}
-	}
+	},
 });
