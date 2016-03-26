@@ -34,10 +34,12 @@ Game = {
 				var at_edge = x == 0 || x == Game.map_grid.width - 1 ||
 					y == 0 || y == Game.map_grid.height - 1;
 
+				var taken = (x == 5 && y == 5) || (x == 10 && y == 10);
+
 				if (at_edge) {
 					// Place a tree entity at the current tile
 					Crafty.e('Tree').at(x, y);
-				} else if (Math.random() < 0.06) {
+				} else if (Math.random() < 0.06 && !taken) {
 					// Place a bush entity at the current tile
 					Crafty.e('Bush').at(x, y);
 				}
@@ -45,6 +47,8 @@ Game = {
 		}
 		
 		Crafty.e('PlayerCharacter').at(5,5);
+
+		Crafty.e('Pushable').at(10, 10);
 
 	}
 };

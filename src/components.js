@@ -33,10 +33,17 @@ Crafty.c('Bush', {
 	},
 });
 
+Crafty.c('Pushable', {
+	init: function() {
+		this.requires('Actor, Color, Collision');
+		this.color('red');
+		this.checkHits('PlayerCharacter');
+	},
+});
+
 Crafty.c('PlayerCharacter', {
 	init: function() {
 		this.last_move = 'up';
-		Crafty.log('X: ' + this.x + ' Y: ' + this.y);
 		this.requires('Actor, Color, Collision');
 		this.color('rgb(20, 75, 40)');
 		this.bind('KeyDown', function(e) {
@@ -57,22 +64,58 @@ Crafty.c('PlayerCharacter', {
 				this.x += Game.map_grid.tile.width;
 			}
 		});
-		this.checkHits('Solid');
+		this.checkHits('Solid, Pushable');
 		this.bind('HitOn', function (hitData) {
-			switch (this.last_move) {
-				case 'up':
-					this.y += Game.map_grid.tile.height;
-					break;
-				case 'down':
-					this.y -= Game.map_grid.tile.height;
-					break;
-				case 'left':
-					this.x += Game.map_grid.tile.width;
-					break;
-				case 'right':
-					this.x -= Game.map_grid.tile.width;
-					break;
+			Crafty.log(hitData[0][0]);
+			if (hitData[0].id == 'Solid') {
+				switch (this.last_move) {
+					case 'up':
+						this.y += Game.map_grid.tile.height;
+						break;
+					case 'down':
+						this.y -= Game.map_grid.tile.height;
+						break;
+					case 'left':
+						this.x += Game.map_grid.tile.width;
+						break;
+					case 'right':
+						this.x -= Game.map_grid.tile.width;
+						break;
+				}
+			} else if (hitData[0].id == 'Pushable') {
+				var pushed = hitData[0];
+				switch (this.last_move) {
+					case 'up':
+						pushed.y -= Game.map_grid.tile.height;
+						if (pushed.hit('Solid, Pushable')) {
+							pushed.y += Game.map_grid.tile.height;
+							this.y += Game.map_grid.tile.height;
+						}
+						break;
+					case 'down':
+						pushed.y += Game.map_grid.tile.height;
+						if (pushed.hit('Solid, Pushable')) {
+							pushed.y -= Game.map_grid.tile.height;
+							this.y -= Game.map_grid.tile.height;
+						}
+						break;
+					case 'left':
+						pushed.x -= Game.map_grid.tile.height;
+						if (pushed.hit('Solid, Pushable')) {
+							pushed.x += Game.map_grid.tile.height;
+							this.x += Game.map_grid.tile.height;
+						}
+						break;
+					case 'right':
+						pushed.x += Game.map_grid.tile.height;
+						if (pushed.hit('Solid, Pushable')) {
+							pushed.x -= Game.map_grid.tile.height;
+							this.x -= Game.map_grid.tile.height;
+						}
+						break;
+				}
+
 			}
-		})
+		});
 	},
 });
