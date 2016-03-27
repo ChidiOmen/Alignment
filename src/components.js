@@ -35,10 +35,12 @@ Crafty.c('Bush', {
 
 Crafty.c('Pushable', {
 	init: function() {
+		this.last_move = 'down';
 		this.colliding = false;
 		this.requires('Actor, Color, Collision');
 		this.color('rgb(220, 205, 40)');
 		this.checkHits('Solid, Pushable');
+		this.onHit('Solid', this.stopMove);
 		this.onHit('Solid', this.stopMove);
 	},
 
@@ -66,7 +68,7 @@ Crafty.c('PlayerCharacter', {
 	init: function() {
 		this.last_move = 'up';
 		this.requires('Actor, Color, Collision');
-		this.color('rgb(20, 75, 40)');
+		this.color('white');
 		this.bind('KeyDown', function(e) {
 			if (e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) {
 				this.last_move = 'down';
@@ -161,6 +163,7 @@ Crafty.c('PlayerCharacter', {
 
 	push_back : function(data) {
 		var pushed = data[0].obj;
+		pushed.last_move = this.last_move;
 		switch (this.last_move) {
 			case 'up':
 				pushed.y -= Game.map_grid.tile.height;

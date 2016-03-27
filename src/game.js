@@ -27,7 +27,8 @@ Game = {
 	start: function() {
 		// Start crafty and set a background color so that we can see it's working
 		Crafty.init(Game.width(), Game.height());
-		Crafty.background('rgb(249, 223, 125');
+		Crafty.background('white');
+		Crafty.sprite(32, 32, "assets/henry4.png", {henry:[0,0]}, 0, 0, 0);
 		//Crafty.background('url(assets/dhbg.png) width:100%');
 
 		for (var x = 0; x < Game.map_grid.width; x++) {
@@ -46,10 +47,9 @@ Game = {
 				}
 			}
 		}
-		
-		Crafty.e('PlayerCharacter').at(5,5);
 
 		Crafty.e('Pushable').at(10, 10);
+		Crafty.e('PlayerCharacter, henry').at(5,5);
 
 	}
 };
