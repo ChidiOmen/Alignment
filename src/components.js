@@ -36,17 +36,33 @@ Crafty.c('Bush', {
 Crafty.c('Pushable', {
 	init: function() {
 		this.last_move = 'down';
-		this.colliding = false;
+		this.hitting = false;
 		this.requires('Actor, Color, Collision');
 		this.color('rgb(220, 205, 40)');
-		this.checkHits('Solid, Pushable');
-		this.onHit('Solid', this.stopMove);
-		this.onHit('Solid', this.stopMove);
+		this.checkHits('PlayerCharacter');
+		this.bind('HitOn', function(data) {
+			var henry = data[0].obj;
+			Crafty.log(henry.last_move);
+			switch (henry.last_move) {
+				case 'up':
+					this.y -= Game.map_grid.tile.height;
+					break;
+				case 'down':
+					this.y += Game.map_grid.tile.height;
+					break;
+				case 'left':
+					this.x -= Game.map_grid.tile.width;
+					break;
+				case 'right':
+					this.x += Game.map_grid.tile.width;
+					break;
+			}
+		});
+		//this.onHit('PlayerCharacter', this.push_back_block);
 	},
 
 	stopMove : function(block) {
-		Crafty.log('WHYHYHHY');
-		colliding = true;
+		this.hitting = true;
 		switch (this.last_move) {
 			case 'up':
 				this.y += Game.map_grid.tile.height;
@@ -62,6 +78,24 @@ Crafty.c('Pushable', {
 				break;
 		}		
 	},
+
+	push_back_block : function(henry) {
+		Crafty.log(henry.last_move);
+		switch(henry.last_move) {
+			case 'up':
+				this.y-= Game.map_grid.tile.height;
+				break;
+			case 'down':
+				this.y+= Game.map_grid.tile.height;
+				break;
+			case 'left':
+				this.x-= Game.map_grid.tile.width;
+				break;
+			case 'right':
+				this.x+= Game.map_grid.tile.width;
+				break;
+		}
+	},
 });
 
 Crafty.c('PlayerCharacter', {
@@ -70,25 +104,70 @@ Crafty.c('PlayerCharacter', {
 		this.requires('Actor, Color, Collision');
 		this.color('white');
 		this.bind('KeyDown', function(e) {
+			var grid_x = this.x / Game.map_grid.tile.width;
+			var grid_y = this.y / Game.map_grid.tile.height;
+
 			if (e.key == Crafty.keys.DOWN_ARROW || e.key == Crafty.keys.S) {
+				Crafty.log(Game.map[grid_x]);
+				if (Game.map[grid_x][grid_y + 1] == 'empty') {
+					this.y += Game.map_grid.tile.height;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x][grid_y + 1] = 'henry';
+				} else if (Game.map[grid_x][grid_y + 1] == 'pushable' &&
+					Game.map[grid_x][grid_y + 2] == 'empty') {
+					this.y += Game.map_grid.tile.height;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x][grid_y + 1] = 'henry';
+					Game.map[grid_x][grid_y + 2] = 'pushable';
+				}
 				this.last_move = 'down';
-				this.y += Game.map_grid.tile.height;
 			}
 			if (e.key == Crafty.keys.UP_ARROW || e.key == Crafty.keys.W) {
+				if (Game.map[grid_x][grid_y - 1] == 'empty') {
+					this.y -= Game.map_grid.tile.height;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x][grid_y - 1] = 'henry';					
+				} else if (Game.map[grid_x][grid_y - 1] == 'pushable' &&
+					Game.map[grid_x][grid_y - 2] == 'empty') {
+					this.y -= Game.map_grid.tile.height;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x][grid_y - 1] = 'henry';
+					Game.map[grid_x][grid_y - 2] = 'pushable';
+				}
 				this.last_move = 'up';
-				this.y -= Game.map_grid.tile.height;
-			}
-			if (e.key == Crafty.keys.LEFT_ARROW || e.key == Crafty.keys.A) {
-				this.last_move = 'left';
-				this.x -= Game.map_grid.tile.width;
 			}
 			if (e.key == Crafty.keys.RIGHT_ARROW || e.key == Crafty.keys.D) {
+				if (Game.map[grid_x + 1][grid_y] == 'empty') {
+					this.x += Game.map_grid.tile.width;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x + 1][grid_y] = 'henry';						
+				} else if (Game.map[grid_x + 1][grid_y] == 'pushable' &&
+					Game.map[grid_x + 2][grid_y] == 'empty') {
+					this.x += Game.map_grid.tile.width;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x + 1][grid_y] = 'henry';
+					Game.map[grid_x + 2][grid_y] = 'pushable';
+				}
 				this.last_move = 'right';
-				this.x += Game.map_grid.tile.width;
+			}
+			if (e.key == Crafty.keys.LEFT_ARROW || e.key == Crafty.keys.A) {
+				if (Game.map[grid_x - 1][grid_y] == 'empty') {
+					this.x -= Game.map_grid.tile.width;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x - 1][grid_y] = 'henry';	
+				} else if (Game.map[grid_x - 1][grid_y] == 'pushable' &&
+					Game.map[grid_x - 2][grid_y] == 'empty') {
+					this.x -= Game.map_grid.tile.width;
+					Game.map[grid_x][grid_y] = 'empty';
+					Game.map[grid_x - 1][grid_y] = 'henry';
+					Game.map[grid_x - 2][grid_y] = 'pushable';
+				}
+				this.last_move = 'left';
 			}
 		});
-		this.onHit('Solid', this.stopMove);
-		this.onHit('Pushable', this.push_back);
+		//this.onHit('Solid', this.stopMove);
+		//this.onHit('Pushable', this.push_back);
+
 		//this.checkHits('Solid, Pushable');
 		/*this.bind('HitOn', function (hitData) {
 			Crafty.log(hitData[0][0]);
@@ -162,37 +241,42 @@ Crafty.c('PlayerCharacter', {
 	},
 
 	push_back : function(data) {
+		Crafty.log('Yeah, I just collided with a pushable.');
+		Crafty.log('Did I hit a pushable? : ' + this.hit('Pushable'));
 		var pushed = data[0].obj;
 		pushed.last_move = this.last_move;
 		switch (this.last_move) {
 			case 'up':
+				Crafty.log(pushed.y);
 				pushed.y -= Game.map_grid.tile.height;
-				Crafty.log(pushed.colliding);
-				if (pushed.colliding) {
+				Crafty.log(pushed.y);
+				Crafty.log(pushed.push_back_block());
+				if (pushed.push_back_block()) {
+					Crafty.log('I\'m in');
 					pushed.y += Game.map_grid.tile.height;
 					this.y += Game.map_grid.tile.height;
 				}
 				break;
 			case 'down':
 				pushed.y += Game.map_grid.tile.height;
-				Crafty.log(pushed.colliding);
-				if (pushed.colliding) {
+				if (pushed.hit('Solid, Pushable')) {
+					Crafty.log('I\'m in');					
 					pushed.y -= Game.map_grid.tile.height;
 					this.y -= Game.map_grid.tile.height;
 				}
 				break;
 			case 'left':
 				pushed.x -= Game.map_grid.tile.height;
-				Crafty.log(pushed.colliding);
-				if (pushed.colliding) {
+				if (pushed.hit('Solid, Pushable')) {
+					Crafty.log('I\'m in');					
 					pushed.x += Game.map_grid.tile.height;
 					this.x += Game.map_grid.tile.height;
 				}
 				break;
 			case 'right':
 				pushed.x += Game.map_grid.tile.height;
-				Crafty.log(pushed.colliding);
-				if (pushed.colliding) {
+				if (pushed.hit('Solid, Pushable')) {
+					Crafty.log('I\'m in');					
 					pushed.x -= Game.map_grid.tile.height;
 					this.x -= Game.map_grid.tile.height;
 				}
