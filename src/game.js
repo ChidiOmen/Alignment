@@ -13,6 +13,8 @@ Game = {
 
 	map: null,
 
+	history: null,
+
 	// The total width of the game screen. Since our grid takes up the entire screen
 	//  this is just the width of a tile times the width of the grid
 	width: function() {
@@ -44,6 +46,7 @@ Game = {
 		Crafty.sprite(32, 32, "assets/henry4.png", {henry:[0,0]}, 0, 0, 0);
 		//Crafty.background('url(assets/dhbg.png) width:100%');
 		Game.map = new Array(Game.map_grid.width);
+		Game.hist_stack = new Array();
 
 		for (var x = 0; x < Game.map_grid.width; x++) {
 			Game.map[x] = new Array(Game.map_grid.height);
@@ -67,12 +70,12 @@ Game = {
 			}
 		}
 
-		for (var i = 1; i < 24; i++) {
+		for (var i = 1; i < 23; i++) {
 			if (i % 4 != 0) {
 				Game.map[i][8] = 'pushable';
 			}
 		}
-		for (var i = 0; i < 6; i++) {
+		for (var i = 1; i < 6; i++) {
 			var x = i*4;
 			var y = 6+4*Crafty.math.randomInt(0,1);
 			Game.map[x][y] = 'pushable';
